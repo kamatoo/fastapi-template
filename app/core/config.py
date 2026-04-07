@@ -26,6 +26,9 @@ class Settings(BaseSettings):
         default_factory=list,
         alias="CORS_ALLOW_ORIGINS",
     )
+    auth_cookie_name: str = Field(default="access_token", alias="AUTH_COOKIE_NAME")
+    auth_cookie_secure: bool = Field(default=False, alias="AUTH_COOKIE_SECURE")
+    auth_cookie_samesite: str = Field(default="lax", alias="AUTH_COOKIE_SAMESITE")
     jwt_secret_key: str = Field(
         default="change-me-to-a-long-random-secret-with-at-least-32-characters",
         alias="JWT_SECRET_KEY",

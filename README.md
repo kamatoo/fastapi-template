@@ -79,6 +79,7 @@ Important:
 - the API container runs migrations automatically on startup
 - the API container uses the Docker database host `db:5432`
 - CORS origins can be configured with `CORS_ALLOW_ORIGINS` as a comma-separated list
+- auth uses a JWT in an HttpOnly cookie by default, configurable via `AUTH_COOKIE_*`
 - the seed admin is created on startup if enabled
 
 If you want a completely fresh start:
@@ -119,7 +120,10 @@ For local non-Docker execution, `.env` points to:
 
 ```env
 DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/app_db
-CORS_ALLOW_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+CORS_ALLOW_ORIGINS=http://localhost:5174,http://127.0.0.1:5174
+AUTH_COOKIE_NAME=access_token
+AUTH_COOKIE_SECURE=false
+AUTH_COOKIE_SAMESITE=lax
 ```
 
 ### 3. Install dependencies

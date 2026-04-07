@@ -3,11 +3,12 @@ from __future__ import annotations
 from collections.abc import Generator
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Cookie, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jwt import InvalidTokenError
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.core.security import decode_token
 from app.db.models.user import User, UserRole
 from app.db.session import SessionLocal
@@ -16,7 +17,7 @@ from app.schemas.auth import TokenPayload
 from app.services.auth_service import AuthService
 from app.services.user_service import UserService
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=False)
 
 
 def get_db_session() -> Generator[Session, None, None]:
@@ -36,14 +37,18 @@ def get_auth_service(db: Annotated[Session, Depends(get_db_session)]) -> AuthSer
 
 
 def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)],
+    bearer_token: Annotated[str | None, Depends(oauth2_scheme)],
     db: Annotated[Session, Depends(get_db_session)],
+    cookie_token: Annotated[str | None, Cookie(alias=settings.auth_cookie_name)] = None,
 ) -> User:
     credentials_error = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    token = bearer_token or cookie_token
+    if token is None:
+        raise credentials_error
 
     try:
         payload = decode_token(token)
