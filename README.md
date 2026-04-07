@@ -78,6 +78,7 @@ Important:
 
 - the API container runs migrations automatically on startup
 - the API container uses the Docker database host `db:5432`
+- CORS origins can be configured with `CORS_ALLOW_ORIGINS` as a comma-separated list
 - the seed admin is created on startup if enabled
 
 If you want a completely fresh start:
@@ -118,6 +119,7 @@ For local non-Docker execution, `.env` points to:
 
 ```env
 DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/app_db
+CORS_ALLOW_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
 ```
 
 ### 3. Install dependencies
