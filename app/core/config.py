@@ -1,0 +1,49 @@
+from __future__ import annotations
+
+from functools import lru_cache
+
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+        extra="ignore",
+    )
+
+    app_name: str = Field(default="FastAPI Template", alias="APP_NAME")
+    app_env: str = Field(default="development", alias="APP_ENV")
+    app_host: str = Field(default="0.0.0.0", alias="APP_HOST")
+    app_port: int = Field(default=8000, alias="APP_PORT")
+    debug: bool = Field(default=False, alias="APP_DEBUG")
+    log_level: str = Field(default="INFO", alias="LOG_LEVEL")
+    api_v1_prefix: str = Field(default="/api/v1", alias="API_V1_PREFIX")
+    jwt_secret_key: str = Field(
+        default="change-me-to-a-long-random-secret-with-at-least-32-characters",
+        alias="JWT_SECRET_KEY",
+    )
+    jwt_algorithm: str = Field(default="HS256", alias="JWT_ALGORITHM")
+    access_token_expire_minutes: int = Field(default=60, alias="ACCESS_TOKEN_EXPIRE_MINUTES")
+    seed_admin_enabled: bool = Field(default=False, alias="SEED_ADMIN_ENABLED")
+    seed_admin_name: str = Field(default="Admin User", alias="SEED_ADMIN_NAME")
+    seed_admin_email: str = Field(default="admin@example.com", alias="SEED_ADMIN_EMAIL")
+    seed_admin_password: str = Field(default="admin123456", alias="SEED_ADMIN_PASSWORD")
+    database_url: str = Field(
+        default="sqlite+pysqlite:///./app.db",
+        alias="DATABASE_URL",
+    )
+    test_database_url: str = Field(
+        default="sqlite+pysqlite:///:memory:",
+        alias="TEST_DATABASE_URL",
+    )
+
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()
+
+
+settings = get_settings()
